@@ -16,7 +16,7 @@ import javax.persistence.Table;
 @Table(name = "orders")
 public class Order implements Serializable {
 
-	public enum Status { ORDERED, SHIPPED, DELIVERED, UNABLE_TO_DELIVER, CANCELED};
+	public enum Status { ORDERED, APPROVED, NOT_APPROVED, SHIPPED, DELIVERED, UNABLE_TO_DELIVER, CANCELED}
 
 	@Id @GeneratedValue private long id;
 	@Column(name = "user_id") private int user;

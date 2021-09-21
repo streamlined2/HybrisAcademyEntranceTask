@@ -17,7 +17,7 @@ import javax.persistence.Table;
 @Table(name = "products")
 public class Product implements Serializable {
 	
-	public enum Status{ OUT_OF_STOCK, IN_STOCK, RUNNING_LOW};
+	public enum Status{ OUT_OF_STOCK, IN_STOCK, RUNNING_LOW}
 	
 	@Id @GeneratedValue private long id;
 	private String name;

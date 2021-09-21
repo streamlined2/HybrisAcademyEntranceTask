@@ -5,16 +5,17 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
 @Entity
 @Table(name = "order_items")
-public class Item implements Serializable {
+public class OrderEntry implements Serializable {
 	
-	@ManyToOne @JoinColumn private Order order;
-	@ManyToOne @JoinColumn private Product product;
+	@ManyToOne(fetch = FetchType.LAZY) @JoinColumn private Order order;
+	@ManyToOne(fetch = FetchType.LAZY) @JoinColumn private Product product;
 	private int quantity;
 	
 	public Order getOrder() {
@@ -49,7 +50,7 @@ public class Item implements Serializable {
 	
 	@Override
 	public boolean equals(Object o) {
-		if(o instanceof Item item) {
+		if(o instanceof OrderEntry item) {
 			return Objects.equals(order, item.order) && Objects.equals(product, item.product);
 		}
 		return false;
