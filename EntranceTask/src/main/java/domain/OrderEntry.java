@@ -5,17 +5,24 @@ import java.util.Objects;
 import java.util.StringJoiner;
 
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.IdClass;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+class OrderEntryPK {
+	private Order order;
+	private Product product;
+}
+
 @Entity
 @Table(name = "order_items")
+@IdClass(OrderEntryPK.class)
 public class OrderEntry implements Serializable {
 	
-	@ManyToOne(fetch = FetchType.LAZY) @JoinColumn private Order order;
-	@ManyToOne(fetch = FetchType.LAZY) @JoinColumn private Product product;
+	@Id @ManyToOne @JoinColumn private Order order;
+	@Id @ManyToOne @JoinColumn private Product product;
 	private int quantity;
 	
 	public Order getOrder() {
