@@ -10,6 +10,7 @@ import java.util.StringJoiner;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
@@ -17,13 +18,19 @@ import javax.persistence.Table;
 @Table(name = "products")
 public class Product implements Serializable {
 	
-	public enum Status{ OUT_OF_STOCK, IN_STOCK, RUNNING_LOW}
+	public enum Status { OUT_OF_STOCK, IN_STOCK, RUNNING_LOW}
 	
-	@Id @GeneratedValue private long id;
+	@Id @GeneratedValue(strategy = GenerationType.IDENTITY) 
+	private long id;
+	
 	private String name;
+	
 	private BigDecimal price;
+	
 	private Status status;
-	@Column(name = "created_at") private LocalDateTime createdAt;
+	
+	@Column(name = "created_at") 
+	private LocalDateTime createdAt;
 	
 	public long getId() {
 		return id;

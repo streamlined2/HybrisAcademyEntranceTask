@@ -21,8 +21,12 @@ class OrderEntryPK {
 @IdClass(OrderEntryPK.class)
 public class OrderEntry implements Serializable {
 	
-	@Id @ManyToOne @JoinColumn private Order order;
-	@Id @ManyToOne @JoinColumn private Product product;
+	@Id @ManyToOne @JoinColumn 
+	private Order order;
+	
+	@Id @ManyToOne @JoinColumn 
+	private Product product;
+	
 	private int quantity;
 	
 	public Order getOrder() {
