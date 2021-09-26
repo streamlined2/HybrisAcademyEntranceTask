@@ -31,7 +31,7 @@ public class Product implements Serializable {
 	
 	@Column(name = "created_at") 
 	private LocalDateTime createdAt;
-	
+
 	public long getId() {
 		return id;
 	}

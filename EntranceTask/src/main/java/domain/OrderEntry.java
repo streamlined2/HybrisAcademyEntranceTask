@@ -24,7 +24,7 @@ public class OrderEntry implements Serializable {
 	@Id @ManyToOne @JoinColumn 
 	private Order order;
 	
-	@Id @ManyToOne @JoinColumn 
+	@Id @ManyToOne @JoinColumn
 	private Product product;
 	
 	private int quantity;
