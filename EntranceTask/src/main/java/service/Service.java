@@ -1,6 +1,7 @@
 package service;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -22,19 +23,24 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
+import javax.persistence.metamodel.Bindable.BindableType;
+import javax.persistence.metamodel.SingularAttribute;
+
 import domain.Order;
 import domain.OrderEntry;
 import domain.Product;
 
 public class Service implements AutoCloseable {
 	
-	private static final String ORDER_ID = "ID";
-	private static final String PRODUCT_ID = "ID";
+	private static final String ORDER_ID = "id";
+	private static final String PRODUCT_ID = "id";
 	private static final String PRODUCT_NAME = "name";
 	private static final String PRODUCT_PRICE = "price";
 	private static final String PRODUCT_STATUS = "status";
 	private static final String ORDER_ENTRY_QUANTITY = "quantity";
 	private static final String PRODUCT_REF = "product";
+	private static final String ORDER_REF = "order";
+	private static final String ORDER_CREATED_AT = "createdAt";
 	
 	private EntityManager entityManager;
 	private EntityManagerFactory entityManagerFactory;
@@ -187,12 +193,43 @@ public class Service implements AutoCloseable {
 		return getEntityManager().createQuery(query).getResultList().stream().map(Tuple::toArray).toList();
 	}
 	
-	public List<?> getOrderEntriesBy(Order order){
-		return null;//TODO
+	public List<Object[]> getOrderEntriesBy(Order byOrder){
+		var cb = getEntityManager().getCriteriaBuilder();
+		var query = cb.createTupleQuery();
+		var orderEntry = query.from(OrderEntry.class);
+		var product = orderEntry.join(PRODUCT_REF,JoinType.INNER);
+		var order = orderEntry.join(ORDER_REF,JoinType.INNER);
+		Expression<BigDecimal> quantity = orderEntry.<BigDecimal>get(ORDER_ENTRY_QUANTITY);
+		Expression<BigDecimal> price = product.<BigDecimal>get(PRODUCT_PRICE);
+		Expression<BigDecimal> totalPriceEx = cb.prod(quantity,price);
+		query.multiselect(List.of(
+				order.get(ORDER_ID),
+				//totalPriceEx,
+				product.get(PRODUCT_NAME),
+				orderEntry.get(ORDER_ENTRY_QUANTITY),
+				order.get(ORDER_CREATED_AT)
+				));
+		query.orderBy(cb.desc(order.get(ORDER_CREATED_AT)),cb.asc(product.get(PRODUCT_NAME)));
+		query.where(getEntityManager().getCriteriaBuilder().equal(order, byOrder));
+		return getEntityManager().createQuery(query).getResultList().stream().map(Tuple::toArray).toList();
 	}
 	
-	public List<?> getAllOrderEntries(){
-		return null;//TODO
+	public List<Object[]> getAllOrderEntries(){
+		var cb = getEntityManager().getCriteriaBuilder();
+		var query = cb.createTupleQuery();
+		var orderEntry = query.from(OrderEntry.class);
+		var product = orderEntry.join(PRODUCT_REF,JoinType.INNER);
+		var order = orderEntry.join(ORDER_REF,JoinType.INNER);
+		Expression<BigDecimal> totalPriceEx = cb.prod(product.get(PRODUCT_PRICE),orderEntry.get(ORDER_ENTRY_QUANTITY));
+		query.multiselect(List.of(
+				order.get(ORDER_ID),
+				//totalPriceEx,
+				product.get(PRODUCT_NAME),
+				orderEntry.get(ORDER_ENTRY_QUANTITY),
+				order.get(ORDER_CREATED_AT)
+				));
+		query.orderBy(cb.desc(order.get(ORDER_CREATED_AT)),cb.asc(product.get(PRODUCT_NAME)));
+		return getEntityManager().createQuery(query).getResultList().stream().map(Tuple::toArray).toList();
 	}
 	
 	public void removeProduct(Product product) {

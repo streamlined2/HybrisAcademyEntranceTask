@@ -7,6 +7,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Supplier;
 
 import domain.Order;
 import domain.Product;
@@ -22,9 +23,11 @@ public class Runner {
 			//listAllOrders(service);
 			//printProductById(service, 3);
 			//printProductByIds(service, List.of(1L,2L,3L));
-			//printOrderById(service, 13);
+			//printOrderById(service, 11);
 			//updateOrderQuantities(service);
-			printOrderedProductsTotalQuantityDescending(service);
+			//printOrderedProductsTotalQuantityDescending(service);
+			printAllOrderEntries(service);
+			//printOneOrderEntries(service,12L);
 		}			
 		
 	}
@@ -58,14 +61,34 @@ public class Runner {
 		product.ifPresentOrElse(System.out::println, ()->System.out.printf("no product found for id %d%n", id));
 	}
 
-	private static void printOrderedProductsTotalQuantityDescending(Service service) {
-		for(Object[] row:service.getOrderedProductsTotalQuantityDescending()) {
+	private static void printTuples(Supplier<List<Object[]>> producer) {
+		for(Object[] row:producer.get()) {
 			for(Object value:row) {
-				System.out.print(value);
-				System.out.print(' ');
+				System.out.printf("%s ", value);
 			}
 			System.out.println();
-		}		
+		}
+	}
+	
+	private static void printTuples(List<Object[]> data) {
+		for(Object[] row:data) {
+			for(Object value:row) {
+				System.out.printf("%s ", value);
+			}
+			System.out.println();
+		}
+	}
+	
+	private static void printOrderedProductsTotalQuantityDescending(Service service) {
+		printTuples(service::getOrderedProductsTotalQuantityDescending);
+	}
+	
+	private static void printAllOrderEntries(Service service) {
+		printTuples(service::getAllOrderEntries);
+	}
+
+	private static void printOneOrderEntries(Service service,long id) {
+		service.getOrderById(id).ifPresent(order->printTuples(service.getOrderEntriesBy(order)));
 	}
 
 	private static void listAllOrders(Service service) {
