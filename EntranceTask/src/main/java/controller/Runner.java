@@ -4,56 +4,47 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import domain.Order;
 import domain.Product;
 import service.Service;
 import view.Menu;
+import view.ProductCreator;
+import view.Target;
 
 public class Runner {
 	
 	private static final String QUIT_OPTION = "q";
 	
-	private static final DataInput source = new DataInputStream(System.in);
-	private static final PrintWriter dest = new PrintWriter(System.out);
+	private static final int PASSWORD_HASH_CODE = "horriblesecret".hashCode();
 	
-	private static final Consumer<Object> reporter = x->{
-			dest.printf("argument %s received.%n%n",x).flush();
-	};
-	
-	private static final Menu menu = new Menu().
-			add("1", "Create product", reporter).
-			add("2", "Create order", reporter).
-			add("3", "Update order quantities", reporter).
-			add("4", "List all products", reporter).
-			add("5", "List all ordered products total quantity sorted desc", reporter).
-			add("6", "Print selected order", reporter).
-			add("7", "List all orders", reporter);
-	
-	private static void printPrompt() {
+	private static void printPrompt(PrintWriter dest, Menu menu) {
 		dest.printf("Please type appropriate key to select menu option or \'%s\' to quit%n%s%n%n", QUIT_OPTION, menu).flush();
 	}
 	
-	private static String readInput() throws IOException {
+	private static String readInput(DataInput source) throws IOException {
 		return source.readLine();
 	}
 	
-	private static void run() {
+	private static void run(DataInput source, PrintWriter dest, Menu menu) {
 		try {
 			while(true) {
-				printPrompt();
-				String response = readInput();
+				printPrompt(dest, menu);
+				String response = readInput(source);
 				if(response.equals(QUIT_OPTION)) break;
-				menu.act(response, response);					
+				try {
+					menu.act(response, response);
+					dest.format("Successfully performed%n").flush();
+				}catch(Exception e) {
+					dest.format("Error encountered during execution: %s%n",e.getMessage()).flush();
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -61,8 +52,25 @@ public class Runner {
 	}
 	
 	public static void main(String[] args) {
+		final DataInput source = new DataInputStream(System.in);
+		final PrintWriter dest = new PrintWriter(System.out);
+		
+		final Target reporter = (Object x)->{dest.printf("argument %s received.%n%n",x).flush(); return null;};
+		
 		try (Service service = Service.getService()){
-			//addProduct(service);
+			final Menu menu = new Menu().
+					add("1", "Create product", new ProductCreator(service,source,dest)).
+					add("2", "Create order", reporter).
+					add("3", "Update order quantities", reporter).
+					add("4", "List all products", reporter).
+					add("5", "List all ordered products total quantity sorted desc", reporter).
+					add("6", "Print selected order", reporter).
+					add("7", "List all orders", reporter).
+					add("8", "Remove product", reporter).
+					add("9", "Remove all products", reporter);
+			
+			run(source, dest, menu);
+
 			//listAllProducts(service);
 			//addOrder(service);
 			//listAllOrders(service);
@@ -73,7 +81,6 @@ public class Runner {
 			//printOrderedProductsTotalQuantityDescending(service);
 			//printAllOrderEntries(service);
 			//printOneOrderEntries(service,12L);
-			run();
 		}			
 		
 	}
@@ -165,14 +172,4 @@ public class Runner {
 		}
 	}
 
-	private static void addProduct(Service service) {
-		Product productA = new Product();
-		productA.setCreatedAt(LocalDateTime.now());
-		productA.setName("Cauldron");
-		productA.setPrice(BigDecimal.valueOf(25690, 2));
-		productA.setStatus(Product.Status.OUT_OF_STOCK);
-		service.createProduct(productA);
-		System.out.println(productA);
-	}
-	
 }

@@ -9,7 +9,7 @@ import java.util.stream.Collectors;
 
 public class Menu {
 	
-	private record Action (String name, Consumer<Object> measure) {
+	private record Action (String name, Target measure) {
 		public Action {
 			Objects.requireNonNull(name, "name of the action shouldn't be null");
 			Objects.requireNonNull(measure, "please provide non-null measure for given action");
@@ -23,12 +23,12 @@ public class Menu {
 
 	private final Map<String,Action> menu = new LinkedHashMap<>();
 	
-	public Menu add(String option, String name, Consumer<Object> action) {
+	public Menu add(String option, String name, Target action) {
 		menu.put(option, new Action(name, action));
 		return this;
 	}
 	
-	public void act(String option, Object arg) {
+	public void act(String option, Object arg) throws Exception {
 		Action action = menu.get(option);
 		if(action != null) {
 			action.measure().accept(arg);

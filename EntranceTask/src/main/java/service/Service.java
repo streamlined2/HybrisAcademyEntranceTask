@@ -23,9 +23,6 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Root;
-import javax.persistence.metamodel.Bindable.BindableType;
-import javax.persistence.metamodel.SingularAttribute;
-
 import domain.Order;
 import domain.OrderEntry;
 import domain.Product;
