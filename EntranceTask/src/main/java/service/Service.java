@@ -199,7 +199,7 @@ public class Service implements AutoCloseable {
 		var orderEntry = query.from(OrderEntry.class);
 		var product = orderEntry.join(PRODUCT_REF,JoinType.INNER);
 		var order = orderEntry.join(ORDER_REF,JoinType.INNER);
-		Expression<BigDecimal> quantity = orderEntry.<BigDecimal>get(ORDER_ENTRY_QUANTITY);
+		Expression<BigDecimal> quantity = cb.toBigDecimal(orderEntry.get(ORDER_ENTRY_QUANTITY));
 		Expression<BigDecimal> price = product.<BigDecimal>get(PRODUCT_PRICE);
 		Expression<BigDecimal> totalPriceEx = cb.prod(quantity,price);
 		query.multiselect(List.of(
@@ -207,6 +207,7 @@ public class Service implements AutoCloseable {
 				//totalPriceEx,
 				product.get(PRODUCT_NAME),
 				orderEntry.get(ORDER_ENTRY_QUANTITY),
+				product.<BigDecimal>get(PRODUCT_PRICE),
 				order.get(ORDER_CREATED_AT)
 				));
 		query.orderBy(cb.desc(order.get(ORDER_CREATED_AT)),cb.asc(product.get(PRODUCT_NAME)));

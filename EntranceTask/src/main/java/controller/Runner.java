@@ -1,5 +1,9 @@
 package controller;
 
+import java.io.DataInput;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
@@ -7,13 +11,54 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import domain.Order;
 import domain.Product;
 import service.Service;
+import view.Menu;
 
 public class Runner {
+	
+	private static final String QUIT_OPTION = "q";
+	
+	private static final DataInput source = new DataInputStream(System.in);
+	private static final PrintWriter dest = new PrintWriter(System.out);
+	
+	private static final Consumer<Object> reporter = x->{
+			dest.printf("argument %s received.%n%n",x).flush();
+	};
+	
+	private static final Menu menu = new Menu().
+			add("1", "Create product", reporter).
+			add("2", "Create order", reporter).
+			add("3", "Update order quantities", reporter).
+			add("4", "List all products", reporter).
+			add("5", "List all ordered products total quantity sorted desc", reporter).
+			add("6", "Print selected order", reporter).
+			add("7", "List all orders", reporter);
+	
+	private static void printPrompt() {
+		dest.printf("Please type appropriate key to select menu option or \'%s\' to quit%n%s%n%n", QUIT_OPTION, menu).flush();
+	}
+	
+	private static String readInput() throws IOException {
+		return source.readLine();
+	}
+	
+	private static void run() {
+		try {
+			while(true) {
+				printPrompt();
+				String response = readInput();
+				if(response.equals(QUIT_OPTION)) break;
+				menu.act(response, response);					
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public static void main(String[] args) {
 		try (Service service = Service.getService()){
@@ -26,8 +71,9 @@ public class Runner {
 			//printOrderById(service, 11);
 			//updateOrderQuantities(service);
 			//printOrderedProductsTotalQuantityDescending(service);
-			printAllOrderEntries(service);
+			//printAllOrderEntries(service);
 			//printOneOrderEntries(service,12L);
+			run();
 		}			
 		
 	}
