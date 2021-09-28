@@ -3,23 +3,20 @@ package view;
 import java.io.DataInput;
 import java.io.PrintWriter;
 import java.util.List;
-import java.util.function.Supplier;
-
 import service.Service;
 
-public class TupleViewer extends Executor {
+public abstract class TupleViewer extends Executor {
 	
-	private Supplier<List<Object[]>> supplier;
-
-	public TupleViewer(Service service, DataInput source, PrintWriter dest, Supplier<List<Object[]>> supplier) {
+	protected TupleViewer(Service service, DataInput source, PrintWriter dest) {
 		super(service, source, dest);
-		this.supplier = supplier;
 	}
+	
+	protected abstract List<Object[]> query() throws Exception;
 
 	@Override
 	public Object perform(Object arg) throws Exception {
 		int cnt = 0;
-		for(Object[] row:supplier.get()) {
+		for(Object[] row:query()) {
 			for(Object value:row) {
 				getDest().printf("%s ", value);
 			}

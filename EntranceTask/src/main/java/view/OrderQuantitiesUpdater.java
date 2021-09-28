@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 import java.util.Scanner;
 
@@ -27,7 +28,7 @@ public class OrderQuantitiesUpdater extends Executor {
 			getService().updateOrderEntryQuantities(order.get(),quantities);			
 			return quantities;
 		}
-		throw new IllegalArgumentException(String.format("no order found with id %d",orderId));
+		throw new NoSuchElementException(String.format("no order found with id %d",orderId));
 	}
 	
 	private long getOrderId() throws IOException {
