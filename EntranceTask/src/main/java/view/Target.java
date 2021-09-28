@@ -3,6 +3,6 @@ package view;
 @FunctionalInterface
 public interface Target {
 	
-	Object accept(Object arg) throws Exception;
+	Object perform(Object arg) throws Exception;
 
 }

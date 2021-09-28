@@ -4,6 +4,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -28,11 +29,12 @@ public class Menu {
 		return this;
 	}
 	
-	public void act(String option, Object arg) throws Exception {
+	public Optional<Object> act(String option, Object arg) throws Exception {
 		Action action = menu.get(option);
 		if(action != null) {
-			action.measure().accept(arg);
+			return Optional.of(action.measure().perform(arg));
 		}
+		return Optional.empty();
 	}
 	
 	private static String toString(Entry<String, Action> entry) {

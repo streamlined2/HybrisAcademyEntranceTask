@@ -4,9 +4,7 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -16,6 +14,7 @@ import domain.Order;
 import domain.Product;
 import service.Service;
 import view.Menu;
+import view.OrderCreator;
 import view.ProductCreator;
 import view.Target;
 
@@ -26,7 +25,11 @@ public class Runner {
 	private static final int PASSWORD_HASH_CODE = "horriblesecret".hashCode();
 	
 	private static void printPrompt(PrintWriter dest, Menu menu) {
-		dest.printf("Please type appropriate key to select menu option or \'%s\' to quit%n%s%n%n", QUIT_OPTION, menu).flush();
+		dest.printf("Please type appropriate key to select menu option or \'%s\' to quit%n%s%n%n", QUIT_OPTION, menu);
+	}
+	
+	private static void printGoodbye(PrintWriter dest) {
+		dest.printf("Bye!%n");
 	}
 	
 	private static String readInput(DataInput source) throws IOException {
@@ -38,12 +41,19 @@ public class Runner {
 			while(true) {
 				printPrompt(dest, menu);
 				String response = readInput(source);
-				if(response.equals(QUIT_OPTION)) break;
+				if(response.equals(QUIT_OPTION)) {
+					printGoodbye(dest);
+					break;
+				}
 				try {
-					menu.act(response, response);
-					dest.format("Successfully performed%n").flush();
+					Optional<Object> result = menu.act(response, response);
+					if(result.isPresent()) {
+						dest.format("%nSuccessfully done and got result: %s%n%n",result.get());						
+					}else {
+						dest.format("%nSuccessfully done.%n%n");												
+					}
 				}catch(Exception e) {
-					dest.format("Error encountered during execution: %s%n",e.getMessage()).flush();
+					dest.format("%nError encountered during execution: %s%n%n",e.getLocalizedMessage());
 				}
 			}
 		} catch (IOException e) {
@@ -53,14 +63,14 @@ public class Runner {
 	
 	public static void main(String[] args) {
 		final DataInput source = new DataInputStream(System.in);
-		final PrintWriter dest = new PrintWriter(System.out);
+		final PrintWriter dest = new PrintWriter(System.out, true);
 		
-		final Target reporter = (Object x)->{dest.printf("argument %s received.%n%n",x).flush(); return null;};
+		final Target reporter = (Object x)->{dest.printf("argument %s received.%n%n",x); return null;};
 		
 		try (Service service = Service.getService()){
 			final Menu menu = new Menu().
 					add("1", "Create product", new ProductCreator(service,source,dest)).
-					add("2", "Create order", reporter).
+					add("2", "Create order", new OrderCreator(service,source,dest)).
 					add("3", "Update order quantities", reporter).
 					add("4", "List all products", reporter).
 					add("5", "List all ordered products total quantity sorted desc", reporter).
@@ -72,7 +82,6 @@ public class Runner {
 			run(source, dest, menu);
 
 			//listAllProducts(service);
-			//addOrder(service);
 			//listAllOrders(service);
 			//printProductById(service, 3);
 			//printProductByIds(service, List.of(1L,2L,3L));
@@ -148,22 +157,6 @@ public class Runner {
 		for(var order:service.getAllOrders()) {
 			System.out.println(order);
 		}
-	}
-
-	private static void addOrder(Service service) {
-		List<Product> products = new LinkedList<>();
-		Optional<Product> product1 = service.getProductById(3);
-		product1.ifPresent(products::add);
-		Optional<Product> product2 = service.getProductById(1);
-		product2.ifPresent(products::add);
-		System.out.println(products);
-		
-		Order order = new Order(); 
-		order.setStatus(Order.Status.SHIPPED);
-		order.setCreatedAt(LocalDateTime.now()); 
-		service.createOrder(order,products); 
-		System.out.println(order);
-		 
 	}
 
 	private static void listAllProducts(Service service) {
