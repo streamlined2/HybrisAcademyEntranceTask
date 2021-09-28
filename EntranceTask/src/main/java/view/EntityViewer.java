@@ -7,9 +7,9 @@ import java.util.List;
 
 import service.Service;
 
-public abstract class Viewer extends Executor {
+public abstract class EntityViewer extends Executor {
 
-	protected Viewer(Service service, DataInput source, PrintWriter dest) {
+	protected EntityViewer(Service service, DataInput source, PrintWriter dest) {
 		super(service,source,dest);
 	}
 	

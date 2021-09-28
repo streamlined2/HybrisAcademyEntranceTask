@@ -8,7 +8,7 @@ import java.util.function.Supplier;
 
 import service.Service;
 
-public class ListAllViewer extends Viewer {
+public class ListAllViewer extends EntityViewer {
 	
 	private final Supplier<List<? extends Serializable>> supplier;
 	

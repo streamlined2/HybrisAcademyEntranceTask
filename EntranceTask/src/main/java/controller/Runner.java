@@ -4,12 +4,7 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
-
-import domain.Order;
-import domain.Product;
 import service.Service;
 import view.AllProductsRemover;
 import view.ListAllViewer;
@@ -19,6 +14,7 @@ import view.OrderQuantitiesUpdater;
 import view.ProductCreator;
 import view.ProductRemover;
 import view.Target;
+import view.TupleViewer;
 
 public class Runner {
 	
@@ -79,7 +75,7 @@ public class Runner {
 					add("2", "Create order", new OrderCreator(service,source,dest)).
 					add("3", "Update order quantities", new OrderQuantitiesUpdater(service,source,dest)).
 					add("4", "List all products", new ListAllViewer(service,source,dest,service::getAllProducts)).
-					add("5", "List all ordered products total quantity sorted desc", reporter).
+					add("5", "List all ordered products total quantity sorted desc", new TupleViewer(service,source,dest,service::getOrderedProductsTotalQuantityDescending)).
 					add("6", "Print selected order", reporter).
 					add("7", "List all orders", reporter).
 					add("8", "Remove product", new ProductRemover(service,source,dest,getPasswordHashCode(service))).
@@ -87,62 +83,10 @@ public class Runner {
 			
 			run(source, dest, menu);
 
-			//printProductById(service, 3);
-			//printProductByIds(service, List.of(1L,2L,3L));
-			//printOrderById(service, 11);
-			//printOrderedProductsTotalQuantityDescending(service);
-			//printAllOrderEntries(service);
-			//printOneOrderEntries(service,12L);
 		} catch(Exception e) {
 			e.printStackTrace();
 		}
 		
 	}
 	
-	private static void printOrderById(Service service, long id) {
-		Optional<Order> order = service.getOrderById(id);
-		order.ifPresentOrElse(System.out::println, ()->System.out.printf("no order found for id %d%n", id));
-	}
-
-	private static void printProductByIds(Service service, Iterable<Long> ids) {
-		for(Product product:service.getProductByIds(ids)) {
-			System.out.println(product);
-		}
-	}
-
-	private static void printProductById(Service service, long id) {
-		Optional<Product> product = service.getProductById(id);
-		product.ifPresentOrElse(System.out::println, ()->System.out.printf("no product found for id %d%n", id));
-	}
-
-	private static void printTuples(Supplier<List<Object[]>> producer) {
-		for(Object[] row:producer.get()) {
-			for(Object value:row) {
-				System.out.printf("%s ", value);
-			}
-			System.out.println();
-		}
-	}
-	
-	private static void printTuples(List<Object[]> data) {
-		for(Object[] row:data) {
-			for(Object value:row) {
-				System.out.printf("%s ", value);
-			}
-			System.out.println();
-		}
-	}
-	
-	private static void printOrderedProductsTotalQuantityDescending(Service service) {
-		printTuples(service::getOrderedProductsTotalQuantityDescending);
-	}
-	
-	private static void printAllOrderEntries(Service service) {
-		printTuples(service::getAllOrderEntries);
-	}
-
-	private static void printOneOrderEntries(Service service,long id) {
-		service.getOrderById(id).ifPresent(order->printTuples(service.getOrderEntriesBy(order)));
-	}
-
 }
