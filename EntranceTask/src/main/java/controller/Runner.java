@@ -4,9 +4,7 @@ import java.io.DataInput;
 import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.function.Supplier;
 
@@ -17,6 +15,7 @@ import view.Menu;
 import view.OrderCreator;
 import view.OrderQuantitiesUpdater;
 import view.ProductCreator;
+import view.ProductRemover;
 import view.Target;
 
 public class Runner {
@@ -77,7 +76,7 @@ public class Runner {
 					add("5", "List all ordered products total quantity sorted desc", reporter).
 					add("6", "Print selected order", reporter).
 					add("7", "List all orders", reporter).
-					add("8", "Remove product", reporter).
+					add("8", "Remove product", new ProductRemover(service,source,dest,PASSWORD_HASH_CODE)).
 					add("9", "Remove all products", reporter);
 			
 			run(source, dest, menu);

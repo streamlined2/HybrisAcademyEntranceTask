@@ -13,16 +13,10 @@ import domain.Order.Status;
 import domain.Product;
 import service.Service;
 
-public class OrderCreator implements Target {
-
-	private final Service service;
-	private final DataInput source;
-	private final PrintWriter dest;
+public class OrderCreator extends Executor {
 
 	public OrderCreator(Service service, DataInput source, PrintWriter dest) {
-		this.service = service;
-		this.source = source;
-		this.dest = dest;
+		super(service,source,dest);
 	}
 
 	@Override
@@ -31,21 +25,21 @@ public class OrderCreator implements Target {
 		order.setStatus(getStatus());
 		final List<Product> products = getProducts();
 		order.setCreatedAt(LocalDateTime.now());
-		service.createOrder(order,products); 
+		getService().createOrder(order,products); 
 		return order;
 	}
 
 	private Status getStatus() throws IOException {
-		dest.printf("Please enter ORDERED, APPROVED, NOT_APPROVED, SHIPPED, DELIVERED, UNABLE_TO_DELIVER, or CANCELED: ");
-		return Enum.valueOf(Order.Status.class, source.readLine().strip().toUpperCase());
+		getDest().printf("Please enter ORDERED, APPROVED, NOT_APPROVED, SHIPPED, DELIVERED, UNABLE_TO_DELIVER, or CANCELED: ");
+		return Enum.valueOf(Order.Status.class, getSource().readLine().strip().toUpperCase());
 	}
 	
 	private List<Product> getProducts() throws IOException {
-		dest.printf("Please enter list of product ids for this order: ");
+		getDest().printf("Please enter list of product ids for this order: ");
 		List<Product> products = new LinkedList<>();
-		try(Scanner scanner = new Scanner(source.readLine())){
+		try(Scanner scanner = new Scanner(getSource().readLine())){
 			while(scanner.hasNextLong()) {
-				service.getProductById(scanner.nextLong()).ifPresent(products::add);
+				getService().getProductById(scanner.nextLong()).ifPresent(products::add);
 			}			
 		}
 		return products;

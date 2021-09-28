@@ -230,12 +230,13 @@ public class Service implements AutoCloseable {
 		return getEntityManager().createQuery(query).getResultList().stream().map(Tuple::toArray).toList();
 	}
 	
-	public void removeProduct(Product product) {
+	public Product removeProduct(Product product) {
 		EntityTransaction tx = getEntityManager().getTransaction();
 		try {
 			tx.begin();
 			getEntityManager().remove(product);
-			tx.commit();			
+			tx.commit();
+			return product;
 		} catch(Exception e) {
 			tx.rollback();
 			throw new PersistenceException(e);

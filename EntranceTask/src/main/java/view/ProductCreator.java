@@ -9,16 +9,10 @@ import domain.Product;
 import domain.Product.Status;
 import service.Service;
 
-public class ProductCreator implements Target {
+public class ProductCreator extends Executor {
 	
-	private final Service service;
-	private final DataInput source;
-	private final PrintWriter dest;
-
 	public ProductCreator(Service service, DataInput source, PrintWriter dest) {
-		this.service = service;
-		this.source = source;
-		this.dest = dest;
+		super(service,source,dest);
 	}
 
 	@Override
@@ -28,23 +22,23 @@ public class ProductCreator implements Target {
 		product.setPrice(getPrice());
 		product.setStatus(getStatus());
 		product.setCreatedAt(LocalDateTime.now());
-		service.createProduct(product);
+		getService().createProduct(product);
 		return product;
 	}
 
 	private Status getStatus() throws IOException {
-		dest.printf("Please enter OUT_OF_STOCK, IN_STOCK, or RUNNING_LOW: ");
-		return Enum.valueOf(Product.Status.class, source.readLine().strip().toUpperCase());
+		getDest().printf("Please enter OUT_OF_STOCK, IN_STOCK, or RUNNING_LOW: ");
+		return Enum.valueOf(Product.Status.class, getSource().readLine().strip().toUpperCase());
 	}
 
 	private BigDecimal getPrice() throws NumberFormatException, IOException {
-		dest.printf("Please enter product price: ");
-		return BigDecimal.valueOf(Double.parseDouble(source.readLine()));
+		getDest().printf("Please enter product price: ");
+		return BigDecimal.valueOf(Double.parseDouble(getSource().readLine()));
 	}
 
 	private String getName() throws IOException {
-		dest.printf("Please enter product name: ");
-		return source.readLine();
+		getDest().printf("Please enter product name: ");
+		return getSource().readLine();
 	}
 
 }
