@@ -44,14 +44,19 @@ public class Service implements AutoCloseable {
 	
 	private Service() {
 		try {
-			Properties props = new Properties();
-			props.load(ClassLoader.getSystemResourceAsStream("local.properties"));
+			Properties props = getProperties();
 			entityManagerFactory = Persistence.createEntityManagerFactory("data", props);
 			entityManager = entityManagerFactory.createEntityManager(props);
 		} catch (IOException e) {
 			e.printStackTrace();
 			throw new IllegalStateException(e);
 		}					
+	}
+	
+	public Properties getProperties() throws IOException {
+		Properties props = new Properties();
+		props.load(ClassLoader.getSystemResourceAsStream("local.properties"));
+		return props;
 	}
 	
 	private static class Holder {

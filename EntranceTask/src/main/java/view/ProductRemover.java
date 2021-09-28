@@ -5,21 +5,15 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import service.Service;
 
-public class ProductRemover extends Executor {
+public class ProductRemover extends AbstractProductRemover {
 	
-	private final int passwordHashCode;
-
 	public ProductRemover(Service service, DataInput source, PrintWriter dest, int passwordHashCode) {
-		super(service,source,dest);
-		this.passwordHashCode = passwordHashCode;
+		super(service,source,dest,passwordHashCode);
 	}
 
 	@Override
-	public Object perform(Object arg) throws Exception {
-		if(passwordHashCode==getPasswordHashCode()) {
-			return getService().removeProduct(getService().getProductById(getProductId()).orElseThrow());
-		}
-		throw new IllegalArgumentException("wrong password"); 
+	public Object action() throws IOException {
+		return getService().removeProduct(getService().getProductById(getProductId()).orElseThrow());
 	}
 
 	private long getProductId() throws IOException {
@@ -27,9 +21,4 @@ public class ProductRemover extends Executor {
 		return Long.parseLong(getSource().readLine());
 	}
 	
-	private int getPasswordHashCode() throws IOException {
-		getDest().printf("Please enter password: ");
-		return getSource().readLine().hashCode();
-	}
-
 }

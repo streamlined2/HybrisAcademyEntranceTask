@@ -11,6 +11,7 @@ import java.util.function.Supplier;
 import domain.Order;
 import domain.Product;
 import service.Service;
+import view.AllProductsRemover;
 import view.Menu;
 import view.OrderCreator;
 import view.OrderQuantitiesUpdater;
@@ -22,10 +23,14 @@ public class Runner {
 	
 	private static final String QUIT_OPTION = "q";
 	
-	private static final int PASSWORD_HASH_CODE = "horriblesecret".hashCode();
+	private static final String PASSWORD_KEY = "password";
+	
+	private static final int getPasswordHashCode(Service service) throws Exception {
+		return service.getProperties().getProperty(PASSWORD_KEY).hashCode();
+	}
 	
 	private static void printPrompt(PrintWriter dest, Menu menu) {
-		dest.printf("Please type appropriate key to select menu option or \'%s\' to quit%n%s%n%n", QUIT_OPTION, menu);
+		dest.printf("Please type appropriate key and press Enter to select menu option or \'%s\' to quit%n%s%n%n", QUIT_OPTION, menu);
 	}
 	
 	private static void printGoodbye(PrintWriter dest) {
@@ -76,8 +81,8 @@ public class Runner {
 					add("5", "List all ordered products total quantity sorted desc", reporter).
 					add("6", "Print selected order", reporter).
 					add("7", "List all orders", reporter).
-					add("8", "Remove product", new ProductRemover(service,source,dest,PASSWORD_HASH_CODE)).
-					add("9", "Remove all products", reporter);
+					add("8", "Remove product", new ProductRemover(service,source,dest,getPasswordHashCode(service))).
+					add("9", "Remove all products", new AllProductsRemover(service,source,dest,getPasswordHashCode(service)));
 			
 			run(source, dest, menu);
 
@@ -89,7 +94,9 @@ public class Runner {
 			//printOrderedProductsTotalQuantityDescending(service);
 			//printAllOrderEntries(service);
 			//printOneOrderEntries(service,12L);
-		}			
+		} catch(Exception e) {
+			e.printStackTrace();
+		}
 		
 	}
 	
