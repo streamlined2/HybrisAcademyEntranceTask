@@ -77,7 +77,7 @@ public class Runner {
 					add("4", "List all products", new ListAllViewer(service,source,dest,service::getAllProducts)).
 					add("5", "List all ordered products total quantity sorted desc", new TupleViewer(service,source,dest,service::getOrderedProductsTotalQuantityDescending)).
 					add("6", "Print selected order", reporter).
-					add("7", "List all orders", reporter).
+					add("7", "List all orders", new TupleViewer(service,source,dest,service::getAllOrderEntries)).
 					add("8", "Remove product", new ProductRemover(service,source,dest,getPasswordHashCode(service))).
 					add("9", "Remove all products", new AllProductsRemover(service,source,dest,getPasswordHashCode(service)));
 			
