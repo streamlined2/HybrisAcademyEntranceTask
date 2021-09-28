@@ -32,7 +32,7 @@ public class Menu {
 	public Optional<Object> act(String option, Object arg) throws Exception {
 		Action action = menu.get(option);
 		if(action != null) {
-			return Optional.of(action.measure().perform(arg));
+			return Optional.ofNullable(action.measure().perform(arg));
 		}
 		return Optional.empty();
 	}

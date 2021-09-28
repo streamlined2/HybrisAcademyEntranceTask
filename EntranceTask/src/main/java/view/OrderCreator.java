@@ -28,9 +28,10 @@ public class OrderCreator implements Target {
 	@Override
 	public Object perform(Object arg) throws Exception {
 		Order order = new Order();
-		order.setCreatedAt(LocalDateTime.now());
 		order.setStatus(getStatus());
-		service.createOrder(order,getProducts()); 
+		final List<Product> products = getProducts();
+		order.setCreatedAt(LocalDateTime.now());
+		service.createOrder(order,products); 
 		return order;
 	}
 

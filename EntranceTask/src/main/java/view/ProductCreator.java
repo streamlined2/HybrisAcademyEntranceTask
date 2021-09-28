@@ -24,10 +24,10 @@ public class ProductCreator implements Target {
 	@Override
 	public Object perform(Object arg) throws Exception {
 		Product product = new Product();
-		product.setCreatedAt(LocalDateTime.now());
 		product.setName(getName());
 		product.setPrice(getPrice());
 		product.setStatus(getStatus());
+		product.setCreatedAt(LocalDateTime.now());
 		service.createProduct(product);
 		return product;
 	}

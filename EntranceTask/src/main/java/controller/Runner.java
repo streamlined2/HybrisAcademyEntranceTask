@@ -15,6 +15,7 @@ import domain.Product;
 import service.Service;
 import view.Menu;
 import view.OrderCreator;
+import view.OrderQuantitiesUpdater;
 import view.ProductCreator;
 import view.Target;
 
@@ -48,12 +49,12 @@ public class Runner {
 				try {
 					Optional<Object> result = menu.act(response, response);
 					if(result.isPresent()) {
-						dest.format("%nSuccessfully done and got result: %s%n%n",result.get());						
-					}else {
-						dest.format("%nSuccessfully done.%n%n");												
+						dest.format("%nDone & got result: %s%n%n",result.get());						
+					} else {
+						dest.format("%nOK.%n%n");												
 					}
 				}catch(Exception e) {
-					dest.format("%nError encountered during execution: %s%n%n",e.getLocalizedMessage());
+					dest.format("%nError: %s%n%n",e.getLocalizedMessage());
 				}
 			}
 		} catch (IOException e) {
@@ -71,7 +72,7 @@ public class Runner {
 			final Menu menu = new Menu().
 					add("1", "Create product", new ProductCreator(service,source,dest)).
 					add("2", "Create order", new OrderCreator(service,source,dest)).
-					add("3", "Update order quantities", reporter).
+					add("3", "Update order quantities", new OrderQuantitiesUpdater(service,source,dest)).
 					add("4", "List all products", reporter).
 					add("5", "List all ordered products total quantity sorted desc", reporter).
 					add("6", "Print selected order", reporter).
@@ -86,25 +87,11 @@ public class Runner {
 			//printProductById(service, 3);
 			//printProductByIds(service, List.of(1L,2L,3L));
 			//printOrderById(service, 11);
-			//updateOrderQuantities(service);
 			//printOrderedProductsTotalQuantityDescending(service);
 			//printAllOrderEntries(service);
 			//printOneOrderEntries(service,12L);
 		}			
 		
-	}
-	
-	private static void updateOrderQuantities(Service service) {
-		Optional<Order> order = service.getOrderById(13);
-		Map<Product,Integer> quantities=new HashMap<>();
-		Optional<Product> product1 = service.getProductById(1);
-		product1.ifPresent(p->quantities.put(p,7));
-		Optional<Product> product2 = service.getProductById(2);
-		product2.ifPresent(p->quantities.put(p,4));
-		
-		if(order.isPresent()) {
-			service.updateOrderEntryQuantities(order.get(),quantities);			
-		}
 	}
 	
 	private static void printOrderById(Service service, long id) {
