@@ -12,6 +12,7 @@ import domain.Order;
 import domain.Product;
 import service.Service;
 import view.AllProductsRemover;
+import view.ListAllViewer;
 import view.Menu;
 import view.OrderCreator;
 import view.OrderQuantitiesUpdater;
@@ -53,7 +54,7 @@ public class Runner {
 				try {
 					Optional<Object> result = menu.act(response, response);
 					if(result.isPresent()) {
-						dest.format("%nDone & got result: %s%n%n",result.get());						
+						dest.format("%nSuccessfully done.%nGot result: %s%n%n",result.get());						
 					} else {
 						dest.format("%nOK.%n%n");												
 					}
@@ -77,7 +78,7 @@ public class Runner {
 					add("1", "Create product", new ProductCreator(service,source,dest)).
 					add("2", "Create order", new OrderCreator(service,source,dest)).
 					add("3", "Update order quantities", new OrderQuantitiesUpdater(service,source,dest)).
-					add("4", "List all products", reporter).
+					add("4", "List all products", new ListAllViewer(service,source,dest,service::getAllProducts)).
 					add("5", "List all ordered products total quantity sorted desc", reporter).
 					add("6", "Print selected order", reporter).
 					add("7", "List all orders", reporter).
@@ -86,8 +87,6 @@ public class Runner {
 			
 			run(source, dest, menu);
 
-			//listAllProducts(service);
-			//listAllOrders(service);
 			//printProductById(service, 3);
 			//printProductByIds(service, List.of(1L,2L,3L));
 			//printOrderById(service, 11);
@@ -144,18 +143,6 @@ public class Runner {
 
 	private static void printOneOrderEntries(Service service,long id) {
 		service.getOrderById(id).ifPresent(order->printTuples(service.getOrderEntriesBy(order)));
-	}
-
-	private static void listAllOrders(Service service) {
-		for(var order:service.getAllOrders()) {
-			System.out.println(order);
-		}
-	}
-
-	private static void listAllProducts(Service service) {
-		for(var product:service.getAllProducts()) {
-			System.out.println(product);
-		}
 	}
 
 }
