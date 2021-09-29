@@ -205,15 +205,15 @@ public class Service implements AutoCloseable {
 		Expression<BigDecimal> price = product.<BigDecimal>get(PRODUCT_PRICE);
 		Expression<BigDecimal> totalPriceEx = cb.prod(quantity,price);
 		query.multiselect(List.of(
-				order.get(ORDER_ID),
-				//totalPriceEx,
-				product.get(PRODUCT_NAME),
-				orderEntry.get(ORDER_ENTRY_QUANTITY),
-				product.<BigDecimal>get(PRODUCT_PRICE),
-				order.get(ORDER_CREATED_AT)
+					order.get(ORDER_ID),
+					//totalPriceEx,
+					product.get(PRODUCT_NAME),
+					orderEntry.get(ORDER_ENTRY_QUANTITY),
+					product.<BigDecimal>get(PRODUCT_PRICE),
+					order.get(ORDER_CREATED_AT)
 				));
 		query.orderBy(cb.desc(order.get(ORDER_CREATED_AT)),cb.asc(product.get(PRODUCT_NAME)));
-		query.where(getEntityManager().getCriteriaBuilder().equal(order, byOrder));
+		query.where(cb.equal(order, byOrder));
 		return getEntityManager().createQuery(query).getResultList().stream().map(Tuple::toArray).toList();
 	}
 	
@@ -225,11 +225,11 @@ public class Service implements AutoCloseable {
 		var order = orderEntry.join(ORDER_REF,JoinType.INNER);
 		Expression<BigDecimal> totalPriceEx = cb.prod(product.get(PRODUCT_PRICE),orderEntry.get(ORDER_ENTRY_QUANTITY));
 		query.multiselect(List.of(
-				order.get(ORDER_ID),
-				//totalPriceEx,
-				product.get(PRODUCT_NAME),
-				orderEntry.get(ORDER_ENTRY_QUANTITY),
-				order.get(ORDER_CREATED_AT)
+					order.get(ORDER_ID),
+					//totalPriceEx,
+					product.get(PRODUCT_NAME),
+					orderEntry.get(ORDER_ENTRY_QUANTITY),
+					order.get(ORDER_CREATED_AT)
 				));
 		query.orderBy(cb.desc(order.get(ORDER_CREATED_AT)),cb.asc(product.get(PRODUCT_NAME)));
 		return getEntityManager().createQuery(query).getResultList().stream().map(Tuple::toArray).toList();

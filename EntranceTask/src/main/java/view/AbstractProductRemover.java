@@ -8,22 +8,22 @@ import service.Service;
 
 public abstract class AbstractProductRemover extends Executor {
 
-	private final int passwordHashCode;
+	private final int passwordDigest;
 
-	protected AbstractProductRemover(Service service, DataInput source, PrintWriter dest, int passwordHashCode) {
+	protected AbstractProductRemover(Service service, DataInput source, PrintWriter dest, int passwordDigest) {
 		super(service,source,dest);
-		this.passwordHashCode = passwordHashCode;
+		this.passwordDigest = passwordDigest;
 	}
 	
 	public abstract Object action() throws IOException;
 
 	@Override
 	public Object perform(Object arg) throws Exception {
-		if(passwordHashCode!=getPasswordHashCode()) throw new IllegalArgumentException("wrong password"); 
+		if(passwordDigest!=getPasswordDigest()) throw new IllegalArgumentException("wrong password"); 
 		return action(); 
 	}
 
-	private int getPasswordHashCode() throws IOException {
+	private int getPasswordDigest() throws IOException {
 		getDest().printf("Please enter password: ");
 		return getSource().readLine().hashCode();
 	}

@@ -79,6 +79,7 @@ public class Order implements Serializable {
 	@Override
 	public String toString() {
 		return new StringJoiner(",","[","]")
+				.add(Long.toString(id))
 				.add(Long.toString(user))
 				.add(status.toString())
 				.add(DateTimeFormatter.ISO_LOCAL_DATE_TIME.format(createdAt))

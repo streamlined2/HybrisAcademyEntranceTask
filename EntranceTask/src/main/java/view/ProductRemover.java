@@ -7,8 +7,8 @@ import service.Service;
 
 public class ProductRemover extends AbstractProductRemover {
 	
-	public ProductRemover(Service service, DataInput source, PrintWriter dest, int passwordHashCode) {
-		super(service,source,dest,passwordHashCode);
+	public ProductRemover(Service service, DataInput source, PrintWriter dest, int passwordDigest) {
+		super(service,source,dest,passwordDigest);
 	}
 
 	@Override

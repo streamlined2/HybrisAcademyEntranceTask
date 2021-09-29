@@ -12,9 +12,9 @@ public class ListAllViewer extends EntityViewer {
 	
 	private final Supplier<List<? extends Serializable>> supplier;
 	
-	public ListAllViewer(Service service, DataInput source, PrintWriter dest, Supplier<List<? extends Serializable>> producer) {
+	public ListAllViewer(Service service, DataInput source, PrintWriter dest, Supplier<List<? extends Serializable>> supplier) {
 		super(service,source,dest);
-		this.supplier = producer;
+		this.supplier = supplier;
 	}
 
 	@Override

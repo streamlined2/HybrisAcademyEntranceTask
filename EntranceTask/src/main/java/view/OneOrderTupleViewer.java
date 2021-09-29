@@ -3,22 +3,16 @@ package view;
 import java.io.DataInput;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Serializable;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Optional;
-import java.util.function.Function;
-
 import domain.Order;
 import service.Service;
 
-public class OneTupleViewer<E extends Serializable> extends TupleViewer {
+public class OneOrderTupleViewer extends TupleViewer {
 
-	private Function<E,List<Object[]>> supplier;
-
-	public OneTupleViewer(Service service, DataInput source, PrintWriter dest, Function<E,List<Object[]>> supplier) {
+	public OneOrderTupleViewer(Service service, DataInput source, PrintWriter dest) {
 		super(service, source, dest);
-		this.supplier = supplier;
 	}
 
 	@Override

@@ -11,7 +11,7 @@ public abstract class Executor implements Target {
 	private final DataInput source;
 	private final PrintWriter dest;
 
-	public Executor(Service service, DataInput source, PrintWriter dest) {
+	protected Executor(Service service, DataInput source, PrintWriter dest) {
 		this.service = service;
 		this.source = source;
 		this.dest = dest;
