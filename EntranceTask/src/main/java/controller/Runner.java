@@ -5,7 +5,6 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Optional;
-import domain.Order;
 import service.Service;
 import view.AllProductsRemover;
 import view.AllTupleViewer;
@@ -22,9 +21,11 @@ public class Runner {
 	private static final String QUIT_OPTION = "q";
 	
 	private static final String PASSWORD_KEY = "password";
+
+	private static final String PROPERTIES_FILE_NAME = "local.properties";
 	
 	private static final int getPasswordDigest(Service service) throws Exception {
-		return service.getProperties().getProperty(PASSWORD_KEY).hashCode();
+		return service.getProperties(PROPERTIES_FILE_NAME).getProperty(PASSWORD_KEY).hashCode();
 	}
 	
 	private static void printPrompt(PrintWriter dest, Menu menu) {
@@ -68,7 +69,7 @@ public class Runner {
 		final DataInput source = new DataInputStream(System.in);
 		final PrintWriter dest = new PrintWriter(System.out, true);
 		
-		try (Service service = Service.getService()){
+		try (Service service = Service.getService(PROPERTIES_FILE_NAME)){			
 			final Menu menu = new Menu().
 					add("1", "Create product", new ProductCreator(service,source,dest)).
 					add("2", "Create order", new OrderCreator(service,source,dest)).

@@ -42,9 +42,11 @@ public class Service implements AutoCloseable {
 	private EntityManager entityManager;
 	private EntityManagerFactory entityManagerFactory;
 	
-	private Service() {
+	private Service() {}
+	
+	private void init(String propFileName) {
 		try {
-			Properties props = getProperties();
+			Properties props = getProperties(propFileName);
 			entityManagerFactory = Persistence.createEntityManagerFactory("data", props);
 			entityManager = entityManagerFactory.createEntityManager(props);
 		} catch (IOException e) {
@@ -53,9 +55,9 @@ public class Service implements AutoCloseable {
 		}					
 	}
 	
-	public Properties getProperties() throws IOException {
+	public Properties getProperties(String propFileName) throws IOException {
 		Properties props = new Properties();
-		props.load(ClassLoader.getSystemResourceAsStream("local.properties"));
+		props.load(ClassLoader.getSystemResourceAsStream(propFileName));
 		return props;
 	}
 	
@@ -64,6 +66,19 @@ public class Service implements AutoCloseable {
 	}
 	
 	public static Service getService() { return Holder.instance;}
+
+	public static Service getService(String propFileName) {
+		Service service = getService(); 
+		service.init(propFileName);
+		return service;
+	}
+
+	public static Service getService(EntityManager em) {
+		Service service = getService();
+		service.entityManager = em;
+		return service;
+	}
+
 	public static EntityManager getEntityManager() { return Holder.instance.entityManager;}
 	
 	@Override
@@ -203,13 +218,14 @@ public class Service implements AutoCloseable {
 		var order = orderEntry.join(ORDER_REF,JoinType.INNER);
 		Expression<BigDecimal> quantity = cb.toBigDecimal(orderEntry.get(ORDER_ENTRY_QUANTITY));
 		Expression<BigDecimal> price = product.<BigDecimal>get(PRODUCT_PRICE);
-		Expression<BigDecimal> totalPriceEx = cb.prod(quantity,price);
+		//Expression<BigDecimal> totalPriceEx = cb.prod(quantity,price);
+		Expression<BigDecimal> totalPriceEx = cb.sum(price,quantity);
 		query.multiselect(List.of(
 					order.get(ORDER_ID),
-					//totalPriceEx,
+					totalPriceEx,
 					product.get(PRODUCT_NAME),
-					orderEntry.get(ORDER_ENTRY_QUANTITY),
-					product.<BigDecimal>get(PRODUCT_PRICE),
+					quantity,
+					price,
 					order.get(ORDER_CREATED_AT)
 				));
 		query.orderBy(cb.desc(order.get(ORDER_CREATED_AT)),cb.asc(product.get(PRODUCT_NAME)));
@@ -223,12 +239,16 @@ public class Service implements AutoCloseable {
 		var orderEntry = query.from(OrderEntry.class);
 		var product = orderEntry.join(PRODUCT_REF,JoinType.INNER);
 		var order = orderEntry.join(ORDER_REF,JoinType.INNER);
-		Expression<BigDecimal> totalPriceEx = cb.prod(product.get(PRODUCT_PRICE),orderEntry.get(ORDER_ENTRY_QUANTITY));
+		Expression<Double> quantity = cb.toDouble(orderEntry.get(ORDER_ENTRY_QUANTITY));
+		Expression<Double> price = product.<Double>get(PRODUCT_PRICE);
+		//Expression<Number> totalPriceEx = cb.prod(quantity,price);
+		Expression<Double> totalPriceEx = cb.sum(price,quantity);
 		query.multiselect(List.of(
 					order.get(ORDER_ID),
-					//totalPriceEx,
+					totalPriceEx,
 					product.get(PRODUCT_NAME),
-					orderEntry.get(ORDER_ENTRY_QUANTITY),
+					quantity,
+					price,
 					order.get(ORDER_CREATED_AT)
 				));
 		query.orderBy(cb.desc(order.get(ORDER_CREATED_AT)),cb.asc(product.get(PRODUCT_NAME)));
